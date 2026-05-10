@@ -33,3 +33,13 @@
 | **Author** | fransbell |
 | **Tag** | v0.3 |
 
+
+## v0.4 — 2026-05-10 07:22 UTC
+
+| Field | Value |
+|-------|-------|
+| **Commit** | `2675abf` |
+| **Message** | feat: add Catppuccin Latte/Frappe light/dark theme with toggle (#13) |
+| **Author** | fransbell |
+| **Tag** | v0.4 |
+

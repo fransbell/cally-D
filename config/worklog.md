@@ -70,3 +70,25 @@ Stage Summary:
 - Deploy script pushes build/ to gh-pages branch for GitHub Pages
 - gh CLI installed and device flow auth initiated
 - Ready to push update to PR #2
+
+---
+Task ID: 4
+Agent: main
+Task: Fix blank page — add createRoot/render, fix tree-shaking, update agent.md with PR-only workflow
+
+Work Log:
+- Diagnosed blank page: main.tsx was using `export default` without `createRoot().render()`
+- Fixed main.tsx to call `createRoot(document.getElementById('root')!).render()`
+- Discovered Rollup tree-shaking bug removing all React code (0.8KB instead of 444KB)
+- Added `treeshake: false` to vite.config.ts as workaround
+- Downgraded Vite 8 → Vite 6 for stable Rollup bundling
+- Deployed fixed build to gh-pages branch
+- Verified live site renders correctly via agent-browser
+- Updated agent.md with PR-only workflow: branch naming, PR process, templates, merge rules
+- Added troubleshooting entries for blank page and tree-shaking issues
+
+Stage Summary:
+- Live site working at https://fransbell.github.io/cally-D/
+- agent.md now enforces PR-only workflow (no direct pushes to main)
+- Branch naming convention and PR template documented
+- Build produces proper 630KB JS bundle (was broken 0.8KB)

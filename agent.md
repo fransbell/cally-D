@@ -64,6 +64,7 @@ cally-D/
 │   └── deploy-pages.sh             # Deploy build/ to gh-pages branch
 ├── config/
 │   └── worklog.md                  # Append-only session worklog
+├── RELEASES.md                     # Auto-generated deployment release log
 ├── prompts/                        # Reusable prompt templates
 ├── index.html                      # Vite entry HTML
 ├── vite.config.ts                  # Vite configuration
@@ -257,8 +258,22 @@ After a PR is merged and main is updated, deploy the built site:
 # 2. Clones/updates gh-pages branch
 # 3. Copies build/ contents to gh-pages
 # 4. Pushes gh-pages to origin
+# 5. Appends a release entry to RELEASES.md
 # Site: https://fransbell.github.io/cally-D/
 ```
+
+### Release Log (`RELEASES.md`)
+
+Every deployment to `gh-pages` automatically appends an entry to `RELEASES.md` in the repo root. This provides a file-based release history without relying on GitHub Releases or CI/Actions.
+
+Each entry includes:
+- **Version tag** — auto-incremented (`v0.1`, `v0.2`, ...)
+- **Deploy date** — timestamp of deployment
+- **Commit hash** — the `main` branch HEAD at deploy time
+- **Commit message** — the squash-merged PR title
+- **Author** — who merged the PR
+
+The file is append-only (like the worklog) and should not be manually edited.
 
 ### Standard Commands
 

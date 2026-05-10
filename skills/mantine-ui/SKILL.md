@@ -38,6 +38,29 @@ loading. Start with the index, then load specific parts as needed.
    - Parts with forms: TextInput, Select, Button, useForm
    - Parts with notifications: Notifications, modals
 
+## Project Structure
+
+This project uses a **feature-driven folder structure** with Zustand state
+management following the Elm Architecture pattern. See the `zustand-elm-arch`
+skill for full details.
+
+```
+src/
+├── features/{module}/
+│   ├── components/    # View layer — Mantine UI components go here
+│   ├── hook/          # State layer — Zustand stores with dispatch
+│   └── utils/         # Pure functions — business logic
+├── shared/
+│   ├── components/    # Shared Mantine UI components
+│   ├── hooks/         # Shared hooks
+│   └── utils/         # Shared utilities
+├── App.tsx            # Root component (composes features)
+└── main.tsx           # Entry point (MantineProvider)
+```
+
+Mantine components should live in `features/{module}/components/` or
+`shared/components/` for cross-feature reuse.
+
 ## Project Setup
 
 When building a Mantine project with Vite + React, use these dependencies:
@@ -50,8 +73,9 @@ When building a Mantine project with Vite + React, use these dependencies:
     "@mantine/form": "^7",
     "@mantine/notifications": "^7",
     "@emotion/react": "^11",
-    "react": "^18",
-    "react-dom": "^18"
+    "react": "^19",
+    "react-dom": "^19",
+    "zustand": "^5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4",

@@ -1,8 +1,28 @@
-import { AppShell, Container, Title, Badge, Group, Tabs } from '@mantine/core';
+import { AppShell, Container, Title, Badge, Group, Tabs, ActionIcon, Tooltip } from '@mantine/core';
+import { useMantineColorScheme } from '@mantine/core';
 import { KanbanBoard } from './features/kanban/components/KanbanBoard';
 import { ReleasesTab } from './features/releases/components/ReleasesTab';
 import { ChangelogTab } from './features/releases/components/ChangelogTab';
 import { useReleases } from './features/releases/hook/useReleases';
+
+function ColorSchemeToggle() {
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  return (
+    <Tooltip label={isDark ? 'Switch to Latte (light)' : 'Switch to Frappé (dark)'}>
+      <ActionIcon
+        variant="subtle"
+        size="lg"
+        onClick={toggleColorScheme}
+        aria-label="Toggle color scheme"
+        color={isDark ? 'yellow' : 'mauve'}
+      >
+        {isDark ? '☀️' : '🌙'}
+      </ActionIcon>
+    </Tooltip>
+  );
+}
 
 export function App() {
   const { currentVersion } = useReleases();
@@ -20,6 +40,7 @@ export function App() {
                 {currentVersion}
               </Badge>
             </Group>
+            <ColorSchemeToggle />
           </Group>
         </Container>
       </AppShell.Header>

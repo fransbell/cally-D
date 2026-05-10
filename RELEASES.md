@@ -23,3 +23,13 @@
 | **Author** | fransbell |
 | **Tag** | v0.2 |
 
+
+## v0.3 — 2026-05-10 07:16 UTC
+
+| Field | Value |
+|-------|-------|
+| **Commit** | `496c20d` |
+| **Message** | refactor: bake RELEASES.md into JS bundle via Vite ?raw import (#11) |
+| **Author** | fransbell |
+| **Tag** | v0.3 |
+

@@ -1,17 +1,13 @@
 #!/bin/bash
 # deploy-pages.sh — Deploy build/ folder to gh-pages branch
 # Usage: ./scripts/deploy-pages.sh
-#
-# This script:
-# 1. Builds the Vite project (output to build/)
-# 2. Pushes the build/ contents to the gh-pages branch
-# 3. GitHub Pages serves from gh-pages branch
 
 set -e
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="$REPO_DIR/build"
 GH_PAGES_DIR="/tmp/cally-d-gh-pages"
+REPO_URL="https://github.com/fransbell/cally-D.git"
 
 echo "========================================="
 echo "  Deploy to GitHub Pages (gh-pages)"
@@ -38,16 +34,21 @@ fi
 # Step 2: Prepare gh-pages branch
 echo "[3/4] Preparing gh-pages branch..."
 rm -rf "$GH_PAGES_DIR"
-git clone --branch gh-pages --single-branch . "$GH_PAGES_DIR" 2>/dev/null || \
-  mkdir -p "$GH_PAGES_DIR" && cd "$GH_PAGES_DIR" && git init && git checkout -b gh-pages
+
+if git ls-remote --heads "$REPO_URL" gh-pages 2>/dev/null | grep -q gh-pages; then
+  git clone --branch gh-pages --single-branch "$REPO_URL" "$GH_PAGES_DIR"
+else
+  mkdir -p "$GH_PAGES_DIR"
+  cd "$GH_PAGES_DIR"
+  git init
+  git checkout -b gh-pages
+fi
 
 cd "$GH_PAGES_DIR"
 
 # Copy build output
 rm -rf *
 cp -r "$BUILD_DIR/"* .
-
-# Add CNAME or .nojekyll if needed
 touch .nojekyll
 
 # Step 3: Commit and push
@@ -55,9 +56,13 @@ echo "[4/4] Deploying to gh-pages..."
 git add -A
 git commit -m "deploy: $(date +%Y-%m-%d_%H:%M)" 2>/dev/null || echo "No changes to deploy."
 
-# Push to origin gh-pages
-git push origin gh-pages 2>&1 || \
-  git push https://github.com/fransbell/cally-D.git gh-pages 2>&1
+# Push using gh CLI auth if available, otherwise use PAT
+if gh auth status &>/dev/null; then
+  git push "$REPO_URL" gh-pages 2>&1
+else
+  echo "Note: If push fails, ensure gh CLI is authenticated or set up git credentials."
+  git push origin gh-pages 2>&1 || git push "$REPO_URL" gh-pages 2>&1
+fi
 
 # Cleanup
 rm -rf "$GH_PAGES_DIR"

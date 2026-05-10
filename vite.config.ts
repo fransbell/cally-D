@@ -6,5 +6,9 @@ export default defineConfig({
   base: '/cally-D/',
   build: {
     outDir: 'build',
+    minify: 'esbuild',
+    rollupOptions: {
+      treeshake: false,
+    },
   },
 })

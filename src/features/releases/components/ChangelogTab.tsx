@@ -1,13 +1,10 @@
-import { useEffect } from 'react';
 import {
   Stack,
   Card,
   Badge,
   Text,
   Code,
-  Loader,
   Center,
-  Alert,
   Table,
 } from '@mantine/core';
 import { useReleases } from '../hook/useReleases';
@@ -27,28 +24,7 @@ const typeColors: Record<string, string> = {
 };
 
 export function ChangelogTab() {
-  const { releases, loading, error, fetchReleases } = useReleases();
-
-  useEffect(() => {
-    fetchReleases();
-  }, [fetchReleases]);
-
-  if (loading) {
-    return (
-      <Center h={300}>
-        <Loader size="lg" type="dots" />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert color="red" title="Failed to load changelog" maw={600} mx="auto" mt="xl">
-        {error}
-      </Alert>
-    );
-  }
-
+  const { releases } = useReleases();
   const changelog = releasesToChangelog(releases);
 
   if (changelog.length === 0) {

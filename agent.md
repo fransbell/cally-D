@@ -12,6 +12,9 @@ The **cally-D** repo (`https://github.com/fransbell/cally-D.git`) serves as a pe
 |-------|-----------|
 | Static Site Generator | Vite + React + TypeScript |
 | UI Library | Mantine UI v7 |
+| State Management | Zustand v5 (reducer/dispatch pattern) |
+| Architecture | Elm Architecture (Model / Update / View) |
+| Folder Structure | Feature-driven (`src/features/{module}/`) |
 | Persistence | Git (cally-D repo) |
 | Deployment | GitHub Pages (local build + gh-pages branch) |
 | Build Hook | Git pre-push (builds locally before push) |
@@ -21,11 +24,20 @@ The **cally-D** repo (`https://github.com/fransbell/cally-D.git`) serves as a pe
 
 ```
 cally-D/
-├── src/                            # Flat source directory (Vite + React)
+├── src/                            # Feature-driven source directory
 │   ├── main.tsx                    # Entry point with MantineProvider
-│   ├── App.tsx                     # Main app component
+│   ├── App.tsx                     # Root component (composes features)
 │   ├── index.css                   # Global styles
-│   └── assets/                     # Static assets
+│   ├── assets/                     # Static assets
+│   ├── features/                   # Feature modules (Elm Architecture)
+│   │   └── {module}/
+│   │       ├── components/         # View — pure Mantine UI templates
+│   │       ├── hook/               # State — Zustand store + dispatch
+│   │       └── utils/              # Pure functions — business logic
+│   └── shared/                     # Cross-feature shared code
+│       ├── components/             # Shared UI components
+│       ├── hooks/                  # Shared hooks
+│       └── utils/                  # Shared utilities
 ├── public/                         # Public static files
 ├── skills/
 │   ├── memory/                     # Session memory skill
@@ -35,11 +47,17 @@ cally-D/
 │   │   │   └── save-state.sh
 │   │   └── references/
 │   │       └── worklog-schema.md
-│   └── mantine-ui/                 # Mantine UI reference skill
+│   ├── mantine-ui/                 # Mantine UI reference skill
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       ├── mantine-index.md
+│   │       └── mantine-part1..49.md
+│   └── zustand-elm-arch/           # Zustand + Elm Architecture skill
 │       ├── SKILL.md
 │       └── references/
-│           ├── mantine-index.md
-│           └── mantine-part1..49.md
+│           ├── store-template.md
+│           ├── feature-scaffold.md
+│           └── elm-architecture.md
 ├── scripts/                        # Utility scripts
 │   ├── setup-hooks.sh              # Install git hooks
 │   ├── pre-push                    # Pre-push hook: build before push
@@ -290,13 +308,15 @@ npm run preview      # Preview production build
 
 5. **Why Mantine?** Comprehensive component library with 100+ components, built-in dark mode, accessibility, and excellent TypeScript support. The llms.txt resource makes it ideal for AI-assisted development.
 
-6. **Why flat /src?** Simplicity for now. The project structure will evolve as features are added, but starting flat keeps things easy to navigate.
+6. **Why feature-driven /src?** Each feature is a self-contained module with its own View (components), State (hook), and logic (utils). This mirrors the Elm Architecture enforced by the `zustand-elm-arch` skill: Model / Update / View are physically separated in the folder structure. Features don't import each other's stores, keeping coupling low and testability high.
 
 7. **Why not a database?** For the current scale (session-level entries), a markdown file in git is simpler, more transparent, and easier to debug than a database.
 
 8. **Why PR-only workflow?** Direct pushes to main create unreviewed changes with no rollback path. PRs provide a review checkpoint, build verification via the pre-push hook, and a clean squash-merged history. This is especially important for AI-generated code where human oversight is valuable.
 
 9. **Why `treeshake: false`?** Rollup's tree-shaking has a known compatibility issue with React 19 + Mantine where it aggressively removes the entire React app code, leaving only the modulepreload polyfill. Disabling tree-shaking produces a working 444KB bundle instead of a broken 0.8KB one. This can be revisited when the upstream issue is resolved.
+
+10. **Why Zustand with reducer/dispatch?** The Elm Architecture pattern (Model / Update / View) provides predictable, unidirectional data flow. Zustand's minimal API combined with a centralized `dispatch` function ensures all state transitions are traceable, testable, and side-effect-free in the reducer. This is far simpler than Redux while providing the same guarantees.
 
 ## Future Enhancements
 

@@ -48,3 +48,25 @@ Stage Summary:
 - cally-D is now a Vite + React + Mantine project with flat /src structure
 - Mantine UI skill baked with full llms.txt docs split into 49 reference parts
 - Ready for PR #2
+
+---
+Task ID: 3
+Agent: main
+Task: Add git pre-push hook (local build), deploy script, and gh CLI device flow
+
+Work Log:
+- Installed gh CLI v2.67.0 via direct binary download
+- Started gh auth device flow (code: 08D6-BF55)
+- Created scripts/pre-push hook: runs npm run build before push, blocks on failure
+- Created scripts/deploy-pages.sh: builds and pushes build/ to gh-pages branch
+- Created scripts/setup-hooks.sh: installs pre-push hook into .git/hooks/
+- Configured Vite outDir to 'build' instead of 'dist'
+- Added 'build' to .gitignore
+- Updated agent.md with deploy workflow, hook documentation, and commands
+- Updated tech stack table with deployment info
+
+Stage Summary:
+- Pre-push hook builds locally before every push (no GitHub Actions needed)
+- Deploy script pushes build/ to gh-pages branch for GitHub Pages
+- gh CLI installed and device flow auth initiated
+- Ready to push update to PR #2

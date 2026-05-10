@@ -13,7 +13,8 @@ The **cally-D** repo (`https://github.com/fransbell/cally-D.git`) serves as a pe
 | Static Site Generator | Vite + React + TypeScript |
 | UI Library | Mantine UI v7 |
 | Persistence | Git (cally-D repo) |
-| Deployment | GitHub Pages |
+| Deployment | GitHub Pages (local build + gh-pages branch) |
+| Build Hook | Git pre-push (builds locally before push) |
 
 ## Repository Structure
 
@@ -38,6 +39,10 @@ cally-D/
 │       └── references/
 │           ├── mantine-index.md
 │           └── mantine-part1..49.md
+├── scripts/                        # Utility scripts
+│   ├── setup-hooks.sh              # Install git hooks
+│   ├── pre-push                    # Pre-push hook: build before push
+│   └── deploy-pages.sh             # Deploy build/ to gh-pages branch
 ├── config/
 │   └── worklog.md                  # Append-only session worklog
 ├── prompts/                        # Reusable prompt templates
@@ -106,23 +111,47 @@ cally-D/
 
 5. **Confirm** to the user that the session state has been saved.
 
-## Development Commands
+## Development & Deployment Workflow
+
+### Git Hooks (Local Build)
+
+The project uses a **pre-push git hook** that automatically builds the project before every push. If the build fails, the push is aborted.
 
 ```bash
-# Install dependencies
-npm install
+# Install hooks (run once after clone)
+./scripts/setup-hooks.sh
 
-# Start dev server
-npm run dev
+# Now every `git push` will:
+# 1. Run npm run build
+# 2. If build succeeds → push proceeds
+# 3. If build fails → push is blocked
+```
 
-# Build for production
-npm run build
+### Deploy to GitHub Pages
 
-# Preview production build
-npm run preview
+After a successful push, deploy the built site:
 
-# Deploy to GitHub Pages (after build)
-# Push dist/ to gh-pages branch or use GitHub Actions
+```bash
+# Deploy build/ to gh-pages branch
+./scripts/deploy-pages.sh
+
+# This script:
+# 1. Runs npm run build (output → build/)
+# 2. Clones/updates gh-pages branch
+# 3. Copies build/ contents to gh-pages
+# 4. Pushes gh-pages to origin
+# Site: https://fransbell.github.io/cally-D/
+```
+
+### Standard Commands
+
+```bash
+npm install          # Install dependencies
+npm run dev          # Start dev server
+npm run build        # Build to build/ folder
+npm run preview      # Preview production build
+./scripts/setup-hooks.sh   # Install git hooks
+./scripts/deploy-pages.sh  # Deploy to GitHub Pages
 ```
 
 ## Quick Reference Commands

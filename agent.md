@@ -15,6 +15,7 @@ The **cally-D** repo (`https://github.com/fransbell/cally-D.git`) serves as a pe
 | Persistence | Git (cally-D repo) |
 | Deployment | GitHub Pages (local build + gh-pages branch) |
 | Build Hook | Git pre-push (builds locally before push) |
+| Workflow | PR-based — all changes via feature branches + Pull Requests |
 
 ## Repository Structure
 
@@ -100,16 +101,114 @@ cally-D/
 
 2. **Copy any new custom skills** created during the session into the repo's `skills/` directory.
 
-3. **Pull latest** from remote (in case of concurrent changes): `git pull origin main`
+3. **Create a feature branch and PR** (see PR Workflow below).
 
-4. **Stage, commit, and push:**
-   ```bash
+4. **Confirm** to the user that the session state has been saved and provide the PR link.
+
+---
+
+## PR Workflow — All Changes via Pull Requests
+
+### Rule: NEVER push directly to `main`
+
+Every change to the cally-D repository must go through a Pull Request. This ensures:
+
+- **Review trail** — Every change is visible and reviewable
+- **Rollback safety** — Bad changes can be reverted by merging a revert PR
+- **Build verification** — The pre-push hook validates the build before any branch is pushed
+- **Clean history** — Squash-merged PRs produce a linear, readable git log
+
+### Branch Naming Convention
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `feat/` | New feature or addition | `feat/memory-skill`, `feat/mantine-ui` |
+| `fix/` | Bug fix | `fix/createRoot-mount`, `fix/asset-paths` |
+| `docs/` | Documentation only | `docs/update-agent-md`, `docs/README` |
+| `refactor/` | Code restructuring | `refactor/src-structure` |
+| `chore/` | Maintenance, configs, deps | `chore/update-vite`, `chore/git-hooks` |
+
+### Step-by-Step PR Process
+
+```
+1. Pull latest main
+   git checkout main && git pull origin main
+
+2. Create feature branch
+   git checkout -b feat/my-change
+
+3. Make changes and commit
    git add -A
-   git commit -m "session: YYYY-MM-DD_HH:MM brief-summary"
-   git push origin main
-   ```
+   git commit -m "feat: description of change"
 
-5. **Confirm** to the user that the session state has been saved.
+4. Push feature branch (pre-push hook runs build)
+   git push origin feat/my-change
+
+5. Create PR via GitHub API
+   gh pr create --title "feat: description" --body "## What This PR Does..."
+
+6. Share PR link with user for review
+
+7. User merges the PR
+
+8. Pull merged main
+   git checkout main && git pull origin main
+
+9. Deploy if needed
+   ./scripts/deploy-pages.sh
+```
+
+### When to Create a PR
+
+| Scenario | Action |
+|----------|--------|
+| End of session (save state) | Create 1 PR with all session changes |
+| Major feature completed | Create a PR immediately |
+| Bug fix | Create a PR immediately |
+| Work in progress (not ready) | Push branch, create draft PR |
+| Small config change | Still create a PR — no exceptions |
+
+### PR Template
+
+Every PR description should include:
+
+```markdown
+## What This PR Adds
+
+[Summary of changes]
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `path/to/file` | What was changed and why |
+
+### Testing
+
+- [ ] Build passes (`npm run build`)
+- [ ] Dev server runs (`npm run dev`)
+- [ ] GitHub Pages looks correct (if UI changes)
+
+### Related
+
+- Worklog entry: Task ID #N
+```
+
+### Merging PRs
+
+- Use **squash merge** by default to keep history clean
+- Delete the feature branch after merge
+- Pull `main` after every merge before starting new work
+
+```bash
+# Merge via gh CLI
+gh pr merge <number> --squash --delete-branch
+
+# Then pull
+git checkout main && git pull origin main
+```
+
+---
 
 ## Development & Deployment Workflow
 
@@ -129,7 +228,7 @@ The project uses a **pre-push git hook** that automatically builds the project b
 
 ### Deploy to GitHub Pages
 
-After a successful push, deploy the built site:
+After a PR is merged and main is updated, deploy the built site:
 
 ```bash
 # Deploy build/ to gh-pages branch
@@ -163,6 +262,7 @@ npm run preview      # Preview production build
 | Save session | "Save state" / "Push to cally-d" |
 | Add worklog entry | Automatic after each task, or "Log this task" |
 | Start dev server | `npm run dev` |
+| Create PR | `gh pr create` or tell agent "create a PR" |
 
 ## Troubleshooting
 
@@ -175,6 +275,8 @@ npm run preview      # Preview production build
 | Bootstrap runs twice | Safe — it's idempotent (pull if exists, clone if not) |
 | Mantine styles missing | Ensure `postcss.config.cjs` is in project root and PostCSS is installed |
 | Vite build fails | Run `npm install` to ensure all dependencies are present |
+| Blank page on deploy | Check `main.tsx` has `createRoot().render()` — not just `export default` |
+| JS bundle too small | Rollup tree-shaking bug — ensure `treeshake: false` in `vite.config.ts` |
 
 ## Design Decisions
 
@@ -192,11 +294,16 @@ npm run preview      # Preview production build
 
 7. **Why not a database?** For the current scale (session-level entries), a markdown file in git is simpler, more transparent, and easier to debug than a database.
 
+8. **Why PR-only workflow?** Direct pushes to main create unreviewed changes with no rollback path. PRs provide a review checkpoint, build verification via the pre-push hook, and a clean squash-merged history. This is especially important for AI-generated code where human oversight is valuable.
+
+9. **Why `treeshake: false`?** Rollup's tree-shaking has a known compatibility issue with React 19 + Mantine where it aggressively removes the entire React app code, leaving only the modulepreload polyfill. Disabling tree-shaking produces a working 444KB bundle instead of a broken 0.8KB one. This can be revisited when the upstream issue is resolved.
+
 ## Future Enhancements
 
 - **Prompt templates**: Store reusable prompt templates in `prompts/` for common workflows
 - **Skill versioning**: Track skill versions and changes across sessions
 - **Session analytics**: Aggregate worklog data to produce usage reports
 - **Auto-save hooks**: Trigger save-state automatically on session timeout
-- **GitHub Actions**: Auto-deploy to GitHub Pages on push to main
+- **GitHub Actions**: Auto-deploy to GitHub Pages on merge to main
 - **Dynamic worklog UI**: Render worklog entries in the React app with live data
+- **Branch protection**: Enable GitHub branch protection rules on `main` to enforce PR-only merges

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
   Stack,
   Card,
@@ -7,9 +6,7 @@ import {
   Text,
   Timeline,
   Code,
-  Loader,
   Center,
-  Alert,
 } from '@mantine/core';
 import { useReleases } from '../hook/useReleases';
 import { changeType } from '../utils/parseReleases';
@@ -28,27 +25,7 @@ const typeColors: Record<string, string> = {
 };
 
 export function ReleasesTab() {
-  const { releases, loading, error, fetchReleases } = useReleases();
-
-  useEffect(() => {
-    fetchReleases();
-  }, [fetchReleases]);
-
-  if (loading) {
-    return (
-      <Center h={300}>
-        <Loader size="lg" type="dots" />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert color="red" title="Failed to load releases" maw={600} mx="auto" mt="xl">
-        {error}
-      </Alert>
-    );
-  }
+  const { releases } = useReleases();
 
   if (releases.length === 0) {
     return (

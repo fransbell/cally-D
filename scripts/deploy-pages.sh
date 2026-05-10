@@ -24,10 +24,7 @@ else
   echo "[1/5] Dependencies already installed."
 fi
 
-echo "[2/5] Syncing RELEASES.md to public/..."
-cp -f "$RELEASES_FILE" "$REPO_DIR/public/RELEASES.md" 2>/dev/null || true
-
-echo "      Building project..."
+echo "[2/5] Building project..."
 npm run build
 
 if [ ! -d "$BUILD_DIR" ]; then

@@ -2,8 +2,11 @@ import { AppShell, Container, Title, Badge, Group, Tabs } from '@mantine/core';
 import { KanbanBoard } from './features/kanban/components/KanbanBoard';
 import { ReleasesTab } from './features/releases/components/ReleasesTab';
 import { ChangelogTab } from './features/releases/components/ChangelogTab';
+import { useReleases } from './features/releases/hook/useReleases';
 
 export function App() {
+  const { currentVersion } = useReleases();
+
   return (
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
@@ -14,7 +17,7 @@ export function App() {
                 Cally-D
               </Title>
               <Badge variant="light" color="yellow" size="lg">
-                v0.1
+                {currentVersion}
               </Badge>
             </Group>
           </Group>

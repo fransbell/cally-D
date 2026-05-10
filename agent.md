@@ -6,24 +6,53 @@
 
 The **cally-D** repo (`https://github.com/fransbell/cally-D.git`) serves as a persistent storage layer for cross-session continuity. It stores the worklog, custom skills, prompts, and configuration that allow an AI agent to "remember" past sessions and resume work seamlessly.
 
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Static Site Generator | Vite + React + TypeScript |
+| UI Library | Mantine UI v7 |
+| Persistence | Git (cally-D repo) |
+| Deployment | GitHub Pages (local build + gh-pages branch) |
+| Build Hook | Git pre-push (builds locally before push) |
+
 ## Repository Structure
 
 ```
 cally-D/
+├── src/                            # Flat source directory (Vite + React)
+│   ├── main.tsx                    # Entry point with MantineProvider
+│   ├── App.tsx                     # Main app component
+│   ├── index.css                   # Global styles
+│   └── assets/                     # Static assets
+├── public/                         # Public static files
 ├── skills/
-│   └── memory/                    # Session memory skill
-│       ├── SKILL.md               # Skill definition & instructions
-│       ├── scripts/
-│       │   ├── bootstrap.sh       # Session start: clone/pull + restore
-│       │   └── save-state.sh      # Session end: copy back + commit + push
+│   ├── memory/                     # Session memory skill
+│   │   ├── SKILL.md
+│   │   ├── scripts/
+│   │   │   ├── bootstrap.sh
+│   │   │   └── save-state.sh
+│   │   └── references/
+│   │       └── worklog-schema.md
+│   └── mantine-ui/                 # Mantine UI reference skill
+│       ├── SKILL.md
 │       └── references/
-│           └── worklog-schema.md  # Worklog format reference
+│           ├── mantine-index.md
+│           └── mantine-part1..49.md
+├── scripts/                        # Utility scripts
+│   ├── setup-hooks.sh              # Install git hooks
+│   ├── pre-push                    # Pre-push hook: build before push
+│   └── deploy-pages.sh             # Deploy build/ to gh-pages branch
 ├── config/
-│   └── worklog.md                 # Append-only session worklog
-├── prompts/                       # Reusable prompt templates (future use)
-├── agent.md                       # This file
-├── index.html                     # GitHub Pages landing
-└── README.md                      # Repo readme
+│   └── worklog.md                  # Append-only session worklog
+├── prompts/                        # Reusable prompt templates
+├── index.html                      # Vite entry HTML
+├── vite.config.ts                  # Vite configuration
+├── postcss.config.cjs              # PostCSS config for Mantine
+├── package.json                    # Dependencies & scripts
+├── tsconfig.json                   # TypeScript config
+├── agent.md                        # This file
+└── README.md                       # Repo readme
 ```
 
 ## Session Lifecycle
@@ -82,6 +111,49 @@ cally-D/
 
 5. **Confirm** to the user that the session state has been saved.
 
+## Development & Deployment Workflow
+
+### Git Hooks (Local Build)
+
+The project uses a **pre-push git hook** that automatically builds the project before every push. If the build fails, the push is aborted.
+
+```bash
+# Install hooks (run once after clone)
+./scripts/setup-hooks.sh
+
+# Now every `git push` will:
+# 1. Run npm run build
+# 2. If build succeeds → push proceeds
+# 3. If build fails → push is blocked
+```
+
+### Deploy to GitHub Pages
+
+After a successful push, deploy the built site:
+
+```bash
+# Deploy build/ to gh-pages branch
+./scripts/deploy-pages.sh
+
+# This script:
+# 1. Runs npm run build (output → build/)
+# 2. Clones/updates gh-pages branch
+# 3. Copies build/ contents to gh-pages
+# 4. Pushes gh-pages to origin
+# Site: https://fransbell.github.io/cally-D/
+```
+
+### Standard Commands
+
+```bash
+npm install          # Install dependencies
+npm run dev          # Start dev server
+npm run build        # Build to build/ folder
+npm run preview      # Preview production build
+./scripts/setup-hooks.sh   # Install git hooks
+./scripts/deploy-pages.sh  # Deploy to GitHub Pages
+```
+
 ## Quick Reference Commands
 
 | Action | Command / Phrase |
@@ -90,6 +162,7 @@ cally-D/
 | View history | "Show my worklog" / "What did we do last session?" |
 | Save session | "Save state" / "Push to cally-d" |
 | Add worklog entry | Automatic after each task, or "Log this task" |
+| Start dev server | `npm run dev` |
 
 ## Troubleshooting
 
@@ -100,6 +173,8 @@ cally-D/
 | Worklog not found | Bootstrap will create a fresh one automatically |
 | Merge conflict on worklog | Keep both versions (append-only); resolve manually if needed |
 | Bootstrap runs twice | Safe — it's idempotent (pull if exists, clone if not) |
+| Mantine styles missing | Ensure `postcss.config.cjs` is in project root and PostCSS is installed |
+| Vite build fails | Run `npm install` to ensure all dependencies are present |
 
 ## Design Decisions
 
@@ -109,9 +184,13 @@ cally-D/
 
 3. **Why separate `.git-remote-cally-d` directory?** The workspace itself may have its own git repo. Keeping cally-D in a separate directory avoids conflicts and keeps concerns separated.
 
-4. **Why copy files instead of symlinks?** Symlinks break across environments and sessions. File copies are reliable and allow the workspace to function independently if the repo is unavailable.
+4. **Why Vite + React?** Fast dev server, excellent TypeScript support, and optimized builds. The React ecosystem pairs well with Mantine UI.
 
-5. **Why not a database?** For the current scale (session-level entries), a markdown file in git is simpler, more transparent, and easier to debug than a database.
+5. **Why Mantine?** Comprehensive component library with 100+ components, built-in dark mode, accessibility, and excellent TypeScript support. The llms.txt resource makes it ideal for AI-assisted development.
+
+6. **Why flat /src?** Simplicity for now. The project structure will evolve as features are added, but starting flat keeps things easy to navigate.
+
+7. **Why not a database?** For the current scale (session-level entries), a markdown file in git is simpler, more transparent, and easier to debug than a database.
 
 ## Future Enhancements
 
@@ -119,3 +198,5 @@ cally-D/
 - **Skill versioning**: Track skill versions and changes across sessions
 - **Session analytics**: Aggregate worklog data to produce usage reports
 - **Auto-save hooks**: Trigger save-state automatically on session timeout
+- **GitHub Actions**: Auto-deploy to GitHub Pages on push to main
+- **Dynamic worklog UI**: Render worklog entries in the React app with live data

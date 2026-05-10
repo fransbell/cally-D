@@ -1,0 +1,30 @@
+#!/bin/bash
+# pre-push hook — Build project locally before pushing
+# Installed as .git/hooks/pre-push (runs automatically on git push)
+
+set -e
+
+echo "========================================="
+echo "  Pre-push: Building project..."
+echo "========================================="
+
+# Check if node_modules exists
+if [ ! -d "node_modules" ]; then
+  echo "Installing dependencies..."
+  npm install
+fi
+
+# Run the build
+echo "Running npm run build..."
+npm run build
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ BUILD FAILED — Push aborted."
+  echo "Fix the build errors and try again."
+  exit 1
+fi
+
+echo ""
+echo "✅ Build succeeded — Proceeding with push."
+echo "========================================="

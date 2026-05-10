@@ -23,3 +23,50 @@ Stage Summary:
 - Bootstrap and save-state scripts ready for use in future sessions
 - agent.md documents the complete session lifecycle process
 - All files ready to be committed and pushed to cally-D
+
+---
+Task ID: 2
+Agent: main
+Task: Add Vite + React + Mantine UI stack and mantine-ui skill to cally-D
+
+Work Log:
+- Pulled latest cally-D after PR #1 merge
+- Fetched https://mantine.dev/llms.txt (index) and https://mantine.dev/llms-full.txt (full docs)
+- Split full Mantine docs (2.3MB) into 49 reference parts (~50KB each)
+- Created skills/mantine-ui/SKILL.md with project setup, key patterns, and component reference
+- Scaffolded Vite + React + TypeScript project (flat /src structure)
+- Configured Mantine UI v7 as dependency with PostCSS preset
+- Created MantineProvider setup in main.tsx with dark theme and yellow accent
+- Built initial App.tsx with AppShell, Cards, SimpleGrid dashboard layout
+- Added postcss.config.cjs for Mantine styles
+- Updated index.html with Cally-D title
+- Added .gitignore for node_modules and dist
+- Updated agent.md with tech stack, dev commands, and Mantine troubleshooting
+- Configured vite.config.ts with base: '/cally-D/' for GitHub Pages
+
+Stage Summary:
+- cally-D is now a Vite + React + Mantine project with flat /src structure
+- Mantine UI skill baked with full llms.txt docs split into 49 reference parts
+- Ready for PR #2
+
+---
+Task ID: 3
+Agent: main
+Task: Add git pre-push hook (local build), deploy script, and gh CLI device flow
+
+Work Log:
+- Installed gh CLI v2.67.0 via direct binary download
+- Started gh auth device flow (code: 08D6-BF55)
+- Created scripts/pre-push hook: runs npm run build before push, blocks on failure
+- Created scripts/deploy-pages.sh: builds and pushes build/ to gh-pages branch
+- Created scripts/setup-hooks.sh: installs pre-push hook into .git/hooks/
+- Configured Vite outDir to 'build' instead of 'dist'
+- Added 'build' to .gitignore
+- Updated agent.md with deploy workflow, hook documentation, and commands
+- Updated tech stack table with deployment info
+
+Stage Summary:
+- Pre-push hook builds locally before every push (no GitHub Actions needed)
+- Deploy script pushes build/ to gh-pages branch for GitHub Pages
+- gh CLI installed and device flow auth initiated
+- Ready to push update to PR #2

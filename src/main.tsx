@@ -1,5 +1,6 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import { createRoot } from 'react-dom/client';
 import { MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { App } from './App';
@@ -9,11 +10,9 @@ const theme = createTheme({
   fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
 });
 
-export default function Main() {
-  return (
-    <MantineProvider theme={theme} defaultColorScheme="dark">
-      <Notifications position="top-right" />
-      <App />
-    </MantineProvider>
-  );
-}
+createRoot(document.getElementById('root')!).render(
+  <MantineProvider theme={theme} defaultColorScheme="dark">
+    <Notifications position="top-right" />
+    <App />
+  </MantineProvider>
+);

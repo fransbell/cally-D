@@ -1,5 +1,5 @@
-import { DashboardView } from './features/dashboard/components/DashboardView';
+import { KanbanBoard } from './features/kanban/components/KanbanBoard';
 
 export function App() {
-  return <DashboardView />;
+  return <KanbanBoard />;
 }

@@ -1,4 +1,6 @@
 import { Card, Text, Badge, Group, ActionIcon, Menu } from '@mantine/core';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useKanban } from '../hook/useKanban';
 import { priorityColor, priorityLabel, formatDate } from '../utils/taskHelpers';
 import type { Task } from '../hook/useKanban';
@@ -55,5 +57,33 @@ export function KanbanCard({ task, lanes }: KanbanCardProps) {
         </Text>
       </Group>
     </Card>
+  );
+}
+
+// Sortable wrapper — the draggable version used inside lanes
+export function SortableKanbanCard({ task, lanes }: KanbanCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id,
+    data: { type: 'task', laneId: task.laneId },
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    cursor: 'grab',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <KanbanCard task={task} lanes={lanes} />
+    </div>
   );
 }

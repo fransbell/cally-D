@@ -13,3 +13,13 @@
 | **Author** | fransbell |
 | **Tag** | v0.1 |
 
+
+## v0.2 — 2026-05-10 07:11 UTC
+
+| Field | Value |
+|-------|-------|
+| **Commit** | `91e6152` |
+| **Message** | feat: add Releases & Changelog tabs to App with Mantine Tabs (#9) |
+| **Author** | fransbell |
+| **Tag** | v0.2 |
+

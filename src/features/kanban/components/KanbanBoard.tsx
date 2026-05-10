@@ -112,7 +112,6 @@ export function KanbanBoard() {
           value={searchQuery}
           onChange={(e) => setSearch(e.currentTarget.value)}
           w={220}
-          styles={{ input: { background: 'var(--mantine-color-dark-7)' } }}
         />
         <ActionIcon
           variant="subtle"
@@ -155,17 +154,17 @@ function DragOverlayCard({ task }: { task: Task }) {
   return (
     <div
       style={{
-        background: 'var(--mantine-color-dark-6)',
+        background: 'var(--mantine-color-body)',
         border: '2px solid var(--mantine-color-yellow-6)',
         borderRadius: 'var(--mantine-radius-sm)',
         padding: 'var(--mantine-spacing-sm)',
         minWidth: 250,
         opacity: 0.9,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        boxShadow: 'var(--mantine-shadow-lg)',
         transform: 'rotate(2deg)',
       }}
     >
-      <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{task.title}</div>
+      <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, color: 'var(--mantine-color-text)' }}>{task.title}</div>
       {task.description && (
         <div style={{ fontSize: 12, color: 'var(--mantine-color-dimmed)', marginBottom: 4 }}>
           {task.description}

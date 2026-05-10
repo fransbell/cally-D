@@ -35,13 +35,13 @@ export function KanbanLane({ lane, filteredTasks }: KanbanLaneProps) {
         maxWidth: 320,
         flexShrink: 0,
         background: isOver
-          ? 'var(--mantine-color-dark-6)'
-          : 'var(--mantine-color-dark-7)',
+          ? 'var(--mantine-color-default-hover)'
+          : 'var(--mantine-color-default)',
         borderRadius: 'var(--mantine-radius-md)',
         padding: 'var(--mantine-spacing-md)',
         border: isOver
           ? '2px dashed var(--mantine-color-yellow-6)'
-          : '1px solid var(--mantine-color-dark-5)',
+          : '1px solid var(--mantine-color-default-border)',
         transition: 'background 0.2s, border 0.2s',
       }}
     >
@@ -99,7 +99,6 @@ function AddTaskForm({ laneId, onAdd }: { laneId: string; onAdd: (title: string,
       onKeyDown={(e) => {
         if (e.key === 'Enter') handleSubmit();
       }}
-      styles={{ input: { background: 'var(--mantine-color-dark-8)', border: 'none' } }}
     />
   );
 }
